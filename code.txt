@@ -39,3 +39,16 @@ ggplot(correlations, aes(x = Alcohol_Type, y = Correlation, fill = Alcohol_Type)
     x = "Type of Alcohol",
     y = "Correlation Coefficient"
   )
+ correlations_test <- cor.test(HappinessAlcoholConsumption$HappinessScore, HappinessAlcoholConsumption$Spirit_PerCapita, method = "pearson")
+> print(correlations_test)
+
+	Pearson's product-moment correlation
+
+data:  HappinessAlcoholConsumption$HappinessScore and HappinessAlcoholConsumption$Spirit_PerCapita
+t = 2.9058, df = 120, p-value = 0.004363
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.08239331 0.41523444
+sample estimates:
+      cor 
+0.2563989 
