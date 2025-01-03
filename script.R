@@ -19,7 +19,7 @@ data_clean <- data %>%
            !is.na(Wine_PerCapita))
 
 # Define output directory
-output_dir <- "D:\\PROJECTS\\test\\output"
+output_dir <- "output"
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
