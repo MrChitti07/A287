@@ -1,8 +1,6 @@
 # Install and load necessary libraries
 library(dplyr)
-
 library(ggplot2)
-
 library(tidyr)
 
 # Load the dataset
@@ -18,24 +16,46 @@ data_clean <- data %>%
            !is.na(Spirit_PerCapita) & 
            !is.na(Wine_PerCapita))
 
-# Define output directory
+# Define output directories
 output_dir <- "output"
+stats_file <- file.path(output_dir, "statistical_test_results.txt")
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
-cat("Output directory is set to:", output_dir, "\n")
+
+# ---- Statistical Tests ----
+
+# Perform correlation tests
+cor_beer <- cor.test(data_clean$HappinessScore, data_clean$Beer_PerCapita)
+cor_spirits <- cor.test(data_clean$HappinessScore, data_clean$Spirit_PerCapita)
+cor_wine <- cor.test(data_clean$HappinessScore, data_clean$Wine_PerCapita)
+
+# Save test results to a text file
+cat("Statistical Test Results:\n\n", file = stats_file)
+cat("Correlation between Happiness and Beer Consumption:\n", file = stats_file, append = TRUE)
+cat(capture.output(cor_beer), sep = "\n", file = stats_file, append = TRUE)
+cat("\n\nCorrelation between Happiness and Spirits Consumption:\n", file = stats_file, append = TRUE)
+cat(capture.output(cor_spirits), sep = "\n", file = stats_file, append = TRUE)
+cat("\n\nCorrelation between Happiness and Wine Consumption:\n", file = stats_file, append = TRUE)
+cat(capture.output(cor_wine), sep = "\n", file = stats_file, append = TRUE)
+
+cat("Statistical test results saved to:", stats_file, "\n")
+
+# ---- Plotting Based on Test Results ----
 
 # Scatter plot: Happiness vs. Beer Consumption
-scatter_beer <- ggplot(data_clean, aes(x = Beer_PerCapita, y = HappinessScore)) +
-  geom_point(color = "blue", alpha = 0.7) +
-  geom_smooth(method = "lm", se = TRUE, color = "red") +
-  theme_minimal() +
-  labs(
-    title = "Scatter Plot: Happiness vs. Beer Consumption",
-    x = "Beer Consumption (Per Capita)",
-    y = "Happiness Score"
-  )
-ggsave(filename = file.path(output_dir, "scatter_happiness_beer.png"), plot = scatter_beer, width = 7, height = 5)
+if (cor_beer$p.value < 0.05) {
+  scatter_beer <- ggplot(data_clean, aes(x = Beer_PerCapita, y = HappinessScore)) +
+    geom_point(color = "blue", alpha = 0.7) +
+    geom_smooth(method = "lm", se = TRUE, color = "red") +
+    theme_minimal() +
+    labs(
+      title = "Scatter Plot: Happiness vs. Beer Consumption",
+      x = "Beer Consumption (Per Capita)",
+      y = "Happiness Score"
+    )
+  ggsave(filename = file.path(output_dir, "scatter_happiness_beer.png"), plot = scatter_beer, width = 7, height = 5)
+}
 
 # Box plot: Happiness Score by Alcohol Type
 data_melted <- data_clean %>%
@@ -93,5 +113,6 @@ barplot_average <- ggplot(average_consumption, aes(x = Alcohol_Type, y = Average
   )
 ggsave(filename = file.path(output_dir, "barplot_average_consumption.png"), plot = barplot_average, width = 7, height = 5)
 
-# Confirm files saved
+# ---- Output Summary ----
+cat("All statistical test results saved to:", stats_file, "\n")
 cat("All plots have been saved in the folder:", output_dir, "\n")
