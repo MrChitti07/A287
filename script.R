@@ -25,7 +25,7 @@ if (!dir.exists(output_dir)) {
 
 # ---- Statistical Tests ----
 
-# Perform correlation tests
+# Perform correlation tests 1
 cor_beer <- cor.test(data_clean$HappinessScore, data_clean$Beer_PerCapita)
 cor_spirits <- cor.test(data_clean$HappinessScore, data_clean$Spirit_PerCapita)
 cor_wine <- cor.test(data_clean$HappinessScore, data_clean$Wine_PerCapita)
